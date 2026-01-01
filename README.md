@@ -8,7 +8,7 @@
 
 ## Updates:
 
-* 01/01/2026: The BARN Challenge has been updated for ROS2 Jazzy. This is a branch under work. Current limitations of ROS2 branch:
+* 01/01/2026: The BARN Challenge has been updated for ROS2 Jazzy. This is a repository under work. Current limitations of ROS2 branch:
   - No DynaBARN worlds.
   - No Singularity container.
   - [eband](https://github.com/utexas-bwi/eband_local_planner.git) is not currently supported.
@@ -69,12 +69,13 @@ source install/local_setup.bash
 
 Below is the example to run move_base with MPPI ([example controller given by clearpath](https://github.com/clearpathrobotics/clearpath_nav2_demos/tree/jazzy)) as local planner.
 
-To run the BARN simulations, simply run the launch file located under jackal_helper/launch/BARN_runner.launch.py:
+To run the BARN simulations, simply run the `BARN_runner.launch.py` launch file located in the `jackal_helper` package:
 ```
-source ../../install/local_setup.sh
+source /<YOUR_HOME_DIR>/jackal_ws/install/local_setup.sh
 ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
 
+<!-- 
 A successful run should print the episode status (collided/succeeded/timeout) and the time cost in second:
 > \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
 >
@@ -87,22 +88,23 @@ A successful run should print the episode status (collided/succeeded/timeout) an
 
 > \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
 >
->Navigation timeout with time 100.0000 (s)
+>Navigation timeout with time 100.0000 (s) -->
 
 ## Test your own navigation stack
-We currently don't provide a lot of instructions or a standard API for implementing the navigation stack, but we might add more in this section depending on people's feedback. If you are new to the ROS or mobile robot navigation, we suggest checking [move_base](http://wiki.ros.org/move_base) which provides basic interface to manipulate a robot.
+We currently don't provide a lot of instructions or a standard API for implementing the navigation stack, but we might add more in this section depending on people's feedback. If you are new to the ROS 2 or mobile robot navigation, we suggest checking [nav2](https://docs.nav2.org/) which provides basic interface to manipulate a robot.
 
-The suggested work flow is to edit the `launch_navigation_stack` method in [BARN_runner.launch.py](jackal_helper/launch/BARN_runner.launch.py). Typically, you would write a custom nav2 bringup launch file. As an example, we have provided a launch file under jackal_helper/launch/nav2_bringup.launch.py. You could also use the provided nav2_bringup launch file while just customizing the [nav2.yaml](jackal_helper/config/nav2.yaml). You should not edit other parts in this file. 
+The suggested work flow is to edit the `launch_navigation_stack` method in [BARN_runner.launch.py](jackal_helper/launch/BARN_runner.launch.py#116). Typically, you would write a custom nav2 bringup launch file. We have provided an example launch file [nav2_bringup.launch.py](ackal_helper/launch/nav2_bringup.launch.py). You could also use the provided nav2_bringup launch file while just customizing the [nav2.yaml](jackal_helper/config/nav2.yaml). You should not edit other parts in this file. 
 
-We provide a bash script `test.sh` to run your navigation stack on 50 uniformly sampled BARN worlds with 10 runs for each world. Once the tests finish, run `python report_test.py --out_path /path/to/out/file` to report the test. Below is an example of MPPI:
+We provide a bash script `test.sh` to run your navigation stack on 50 uniformly sampled BARN worlds with 10 runs for each world. Once the tests finish, run `python report_test.py --out_path /path/to/out/file` to report the test. 
+
+<!-- Below is an example of MPPI:
 ```
 python report_test.py --out_path res/mppi_out.txt
 ```
 You should see the report as this:
->Avg Time: 33.4715, Avg Metric: 0.1693, Avg Success: 0.8800, Avg Collision: 0.0480, Avg Timeout: 0.0720
+>Avg Time: 33.4715, Avg Metric: 0.1693, Avg Success: 0.8800, Avg Collision: 0.0480, Avg Timeout: 0.0720 -->
 
 
 ## Submission
-Submit a link that downloads your customized repository to this [Google form](https://docs.google.com/forms/d/e/1FAIpQLSfZLMVluXE-HWnV9lNP00LuBi3e9HFOeLi30p9tsHUViWpqrA/viewform). Your navigation stack will be tested in the Singularity container on 50 hold-out BARN worlds sampled from the same distribution as the 300 BARN worlds. In the repository, make sure the `run.py` runs your navigation stack and `Singularityfile.def` installs all the dependencies of your repo. We suggest to actually build an image and test it with `./singularity_run.sh /path/to/image/file python3 run.py --world_idx 0`.
+<!-- Submit a link that downloads your customized repository to this [Google form](https://docs.google.com/forms/d/e/1FAIpQLSfZLMVluXE-HWnV9lNP00LuBi3e9HFOeLi30p9tsHUViWpqrA/viewform). Your navigation stack will be tested in the Singularity container on 50 hold-out BARN worlds sampled from the same distribution as the 300 BARN worlds. In the repository, make sure the `run.py` runs your navigation stack and `Singularityfile.def` installs all the dependencies of your repo. We suggest to actually build an image and test it with `./singularity_run.sh /path/to/image/file python3 run.py --world_idx 0`. -->
 
-Currently, this 
