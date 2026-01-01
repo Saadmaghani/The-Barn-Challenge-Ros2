@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>jackal_helper</name>
+  <version>0.0.0</version>
+  <description>The jackal_helper package</description>
+
+  <!-- One maintainer tag required, multiple allowed, one person per tag -->
+  <!-- Example:  -->
+  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
+  <maintainer email="zifanxu@todo.todo">zifanxu</maintainer>
+  <maintainer email="saadmaghani@gmail.com">Saad Ghani</maintainer>
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+  <!-- Build system -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  
+  <!-- Core ROS 2 -->
+  <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+  <depend>python3-catkin-pkg</depend>
+
+  <!-- Clearpath repositories -->
+  <depend>clearpath_common</depend>
+  <depend>clearpath_config</depend>
+  <depend>clearpath_msgs</depend>
+  <depend>clearpath_simulator</depend>
+
+  <!-- Messages -->
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_msgs</depend>
+
+  <!-- Gazebo Sim bridge interfaces -->
+  <depend>ros_gz_interfaces</depend>
+
+  <!-- Navigation -->
+  <depend>nav2_bringup</depend>
+
+  <!-- Makes the launch files available to ros2 launch command.  -->
+  <exec_depend>ros2launch</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
