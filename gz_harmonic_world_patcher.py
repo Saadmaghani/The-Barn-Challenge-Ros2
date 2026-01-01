@@ -1,6 +1,10 @@
 import os
 import xml.etree.ElementTree as ET
 
+"""
+Used to convert BARN world files from gazebo-classic to gazebo harmonic. 
+"""
+
 PLUGINS = [
     {"filename": "gz-sim-physics-system", "name": "gz::sim::systems::Physics"},
     {"filename": "gz-sim-user-commands-system", "name": "gz::sim::systems::UserCommands"},

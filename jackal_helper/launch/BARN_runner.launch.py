@@ -163,8 +163,6 @@ def launch_navigation_stack(context, *args, **kwargs):
     )
 
 
-
-
     return [nav2_launch, publish_goal]
 
 def generate_launch_description():
