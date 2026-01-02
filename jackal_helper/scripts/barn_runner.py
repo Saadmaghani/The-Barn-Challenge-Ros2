@@ -138,7 +138,7 @@ class BARNRunner(Node):
         self.get_logger().info(f"Navigation metric: {nav_metric:.4f}")
         
         # writing to file
-        out_path = os.path.join(dirname(self._get_pkg_src_path()), 'res')
+        out_path = os.path.join(self._get_pkg_src_path(), 'res')
         os.makedirs(out_path, exist_ok=True)
         out_path = os.path.join(out_path, out_file) 
         
@@ -178,8 +178,8 @@ class BARNRunner(Node):
     def _get_pkg_src_path(self):
         # hack to get ws/src/jackal_helper
         workspace_path = dirname(dirname(dirname(dirname(get_package_share_directory("jackal_helper")))))
-        jackal_helper_src_path = os.path.join(workspace_path, "src", "jackal_helper")
-        return jackal_helper_src_path
+        BARN_challenge_src_path = os.path.join(workspace_path, "src", "The-Barn-Challenge-Ros2")
+        return BARN_challenge_src_path
 
 def main():
     rclpy.init()

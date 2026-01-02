@@ -20,10 +20,11 @@
 ## Requirements
 If you run it on a local machine without containers:
 * ROS version at least Jazzy
-* Ubuntu 24.04
-* Gazebo Harmonic
+<!-- * Ubuntu 24.04 -->
+* rosdep
+* Gazebo Harmonic (installed by default with ROS 2 Jazzy)
 
-The requirements above are just suggestions. If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
+If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
 
 ## Installation
 Follow the instructions below to run simulations on your local machines.
@@ -32,12 +33,13 @@ Follow the instructions below to run simulations on your local machines.
 ```
 apt -y update; apt-get -y install python3-venv
 python3 -m venv /<YOUR_HOME_DIR>/nav_challenge
+python3 -m venv --system-site-packages nav_challenge 
 export PATH="/<YOUR_HOME_DIR>/nav_challenge/bin:$PATH"
 ```
 
 2. Install Python dependencies
 ```
-pip3 install catkin_pkg
+pip3 install catkin_pkg numpy pyyaml
 ```
 
 3. Create ROS workspace
@@ -62,12 +64,11 @@ rosdep install -y --from-paths . --ignore-src --rosdistro=<YOUR_ROS_VERSION>
 6. Build the workspace
 ```
 colcon build --symlink-install
-source install/local_setup.bash
 ```
 
 ## Run Simulations
 
-Below is the example to run move_base with MPPI ([example controller given by clearpath](https://github.com/clearpathrobotics/clearpath_nav2_demos/tree/jazzy)) as local planner.
+Below is the example to run nav2 with MPPI ([example controller given by clearpath](https://github.com/clearpathrobotics/clearpath_nav2_demos/tree/jazzy)) as the controller.
 
 To run the BARN simulations, simply run the `BARN_runner.launch.py` launch file located in the `jackal_helper` package:
 ```

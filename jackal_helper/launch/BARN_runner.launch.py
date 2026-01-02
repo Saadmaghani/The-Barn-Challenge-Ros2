@@ -5,7 +5,8 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction, SetEnvironmentVariable
-from launch.actions import LogInfo, Shutdown, TimerAction, ExecuteProcess, GroupAction
+from launch.actions import LogInfo, Shutdown, TimerAction, ExecuteProcess, GroupAction, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
@@ -128,6 +129,14 @@ def launch_navigation_stack(context, *args, **kwargs):
             ]
     )
 
+    # error handling
+    nav2_exit_handler = RegisterEventHandler(
+        OnProcessExit(
+            target_action=lambda action: action.name == 'bt_navigator',
+            on_exit=[Shutdown()]
+        )
+    )
+
     # Get goal distance from world_idx and make a string to send to the /navigate_to_pose action server
     relative_goal_distance = parse_world_idx(LaunchConfiguration("world_idx").perform(context))[1]
     goal = {
@@ -145,7 +154,8 @@ def launch_navigation_stack(context, *args, **kwargs):
     }
     goal_str = yaml.dump(goal, default_flow_style=True, width=float("inf")).rstrip("\n")
 
-    # goal published after 10 seconds
+    # Give navigation stack 10 seconds to initialize. 
+    # Goal published after 10 seconds.
     publish_goal = TimerAction(
         period=10.0,
         actions=[
@@ -163,7 +173,7 @@ def launch_navigation_stack(context, *args, **kwargs):
     )
 
 
-    return [nav2_launch, publish_goal]
+    return [nav2_launch, nav2_exit_handler, publish_goal]
 
 def generate_launch_description():
 
@@ -184,14 +194,14 @@ def generate_launch_description():
                     ],
                 on_exit=[
                     LogInfo(msg="Trial ended. Shutting down in 5 seconds..."),
-                    TimerAction(period=5.0, actions=[Shutdown(), ExecuteProcess(cmd=['pkill','-f','\'gz sim\''], shell=True)]),
+                    TimerAction(period=5.0, actions=[Shutdown(), ExecuteProcess(cmd=['pkill', '-9', '-f','\'gz sim\''], shell=True)]),
                     ],
                 
             )
         ]
     ) 
     
-    # launch navigation stack after X seconds
+    # Launch navigation stack after 15 seconds
     nav_stack = TimerAction(
         period=15.0,
         actions=[LogInfo(msg="Launching Nav2..."), OpaqueFunction(function=launch_navigation_stack)]
