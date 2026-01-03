@@ -169,7 +169,7 @@ def launch_navigation_stack(context, *args, **kwargs):
                     'nav2_msgs/action/NavigateToPose',
                     goal_str
                 ],
-                output='ignore'
+                output='log'
             )
         ]
     )
