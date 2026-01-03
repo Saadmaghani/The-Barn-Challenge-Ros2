@@ -12,6 +12,7 @@
   - No DynaBARN worlds.
   - No Singularity container.
   - [eband](https://github.com/utexas-bwi/eband_local_planner.git) is not currently supported.
+  - Very verbose output.
 
 
 * 02/04/2024: Adding 60 [DynaBARN](https://github.com/aninair1905/DynaBARN) environments. DynaBARN environments can be accessed by world indexes from 300-359.
@@ -72,6 +73,7 @@ source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 source $HOME/jackal_ws/install/local_setup.sh 
 ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
+Have a look at the [list of arguments](jackal_helper/launch/BARN_runner.launch.py#19) accepted by the launch file. For example, setting `gui:=true` will launch gazebo's gui which in most cases is helpful.
 
 If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
 
