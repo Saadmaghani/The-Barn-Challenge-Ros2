@@ -100,20 +100,27 @@ def spawn_jackal(context, *args, **kwargs):
     world_name = parse_world_idx(LaunchConfiguration('world_idx').perform(context))[0]
     remap_scan_topic = SetRemap(src='/sensors/lidar2d_0/scan', dst='/front/scan')
 
-    robot_spawn = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([spawner_launch_path]),
-        launch_arguments=[
-            ('use_sim_time', 'true'),
-            ('setup_path', LaunchConfiguration('setup_path')),
-            ('world', world_name),
-            ('rviz', LaunchConfiguration('rviz')),
-            ('generate', 'true'),
-            ('x', '2.0'),
-            ('y', '2.0'),
-            ('z', '0.3')]
+    timed_robot_spawn = TimerAction(
+        period=5.0,
+        actions=[
+            LogInfo(msg="Spawning Jackal..."),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([spawner_launch_path]),
+                launch_arguments=[
+                    ('use_sim_time', 'true'),
+                    ('setup_path', LaunchConfiguration('setup_path')),
+                    ('world', world_name),
+                    ('rviz', LaunchConfiguration('rviz')),
+                    ('generate', 'true'),
+                    ('x', '2.0'),
+                    ('y', '2.0'),
+                    ('z', '0.3')]
+            )
+        ]
     )
+    
 
-    return [remap_scan_topic, robot_spawn]
+    return [remap_scan_topic, timed_robot_spawn]
 
 def launch_navigation_stack(context, *args, **kwargs):
 
@@ -177,12 +184,6 @@ def launch_navigation_stack(context, *args, **kwargs):
     return [nav2_launch, nav2_exit_handler, publish_goal]
 
 def generate_launch_description():
-    
-    # spawn jackal after 5 seconds
-    spawn_jackal_timed = TimerAction(
-        period=5.0,
-        actions=[LogInfo(msg="Spawning Jackal..."), OpaqueFunction(function=spawn_jackal)]
-    )
 
     # Start the BARN_runner node after 10 seconds. this replaces the run.py in ROS1 version of The_BARN_Challenge.
     BARN_runner_node = TimerAction(
@@ -216,11 +217,10 @@ def generate_launch_description():
     
     
 
-
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(OpaqueFunction(function=launch_ros_gazebo))
-    ld.add_action(spawn_jackal_timed)
+    ld.add_action(OpaqueFunction(function=spawn_jackal))
     ld.add_action(BARN_runner_node)
     ld.add_action(nav_stack)
     return ld
