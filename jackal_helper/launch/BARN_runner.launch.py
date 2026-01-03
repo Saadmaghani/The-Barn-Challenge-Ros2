@@ -107,6 +107,7 @@ def spawn_jackal(context, *args, **kwargs):
             ('setup_path', LaunchConfiguration('setup_path')),
             ('world', world_name),
             ('rviz', LaunchConfiguration('rviz')),
+            ('generate', 'true'),
             ('x', '2.0'),
             ('y', '2.0'),
             ('z', '0.3')]
