@@ -100,27 +100,21 @@ def spawn_jackal(context, *args, **kwargs):
     world_name = parse_world_idx(LaunchConfiguration('world_idx').perform(context))[0]
     remap_scan_topic = SetRemap(src='/sensors/lidar2d_0/scan', dst='/front/scan')
 
-    timed_robot_spawn = TimerAction(
-        period=5.0,
-        actions=[
-            LogInfo(msg="Spawning Jackal..."),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([spawner_launch_path]),
-                launch_arguments=[
-                    ('use_sim_time', 'true'),
-                    ('setup_path', LaunchConfiguration('setup_path')),
-                    ('world', world_name),
-                    ('rviz', LaunchConfiguration('rviz')),
-                    ('generate', 'true'),
-                    ('x', '2.0'),
-                    ('y', '2.0'),
-                    ('z', '0.3')]
-            )
-        ]
+    robot_spawn = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([spawner_launch_path]),
+        launch_arguments=[
+            ('use_sim_time', 'true'),
+            ('setup_path', LaunchConfiguration('setup_path')),
+            ('world', world_name),
+            ('rviz', LaunchConfiguration('rviz')),
+            ('generate', 'true'),
+            ('x', '2.0'),
+            ('y', '2.0'),
+            ('z', '0.3')]
     )
     
 
-    return [remap_scan_topic, timed_robot_spawn]
+    return [remap_scan_topic, robot_spawn]
 
 def launch_navigation_stack(context, *args, **kwargs):
 
@@ -175,7 +169,7 @@ def launch_navigation_stack(context, *args, **kwargs):
                     'nav2_msgs/action/NavigateToPose',
                     goal_str
                 ],
-                output='screen'
+                output='ignore'
             )
         ]
     )
@@ -184,7 +178,6 @@ def launch_navigation_stack(context, *args, **kwargs):
     return [nav2_launch, nav2_exit_handler, publish_goal]
 
 def generate_launch_description():
-
     # Start the BARN_runner node after 10 seconds. this replaces the run.py in ROS1 version of The_BARN_Challenge.
     BARN_runner_node = TimerAction(
         period = 10.0,
@@ -215,8 +208,6 @@ def generate_launch_description():
         actions=[LogInfo(msg="Launching Nav2..."), OpaqueFunction(function=launch_navigation_stack)]
     )
     
-    
-
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(OpaqueFunction(function=launch_ros_gazebo))
