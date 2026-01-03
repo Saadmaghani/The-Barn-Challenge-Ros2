@@ -32,9 +32,9 @@ Follow the instructions below to run simulations on your local machines.
 1. Create a virtual environment (we show examples with python venv, you can use conda instead)
 ```
 apt -y update; apt-get -y install python3-venv
-python3 -m venv /<YOUR_HOME_DIR>/nav_challenge
+python3 -m venv $HOME/nav_challenge
 python3 -m venv --system-site-packages nav_challenge 
-export PATH="/<YOUR_HOME_DIR>/nav_challenge/bin:$PATH"
+export PATH="$HOME/nav_challenge/bin:$PATH"
 ```
 
 2. Install Python dependencies
@@ -44,8 +44,8 @@ pip3 install catkin_pkg numpy pyyaml
 
 3. Create ROS workspace
 ```
-mkdir -p /<YOUR_HOME_DIR>/jackal_ws/src
-cd /<YOUR_HOME_DIR>/jackal_ws/src
+mkdir -p $HOME/jackal_ws/src
+cd $HOME/jackal_ws/src
 ```
 
 4. Clone this repo and required ros packages: 
@@ -72,7 +72,7 @@ Below is the example to run nav2 with MPPI ([example controller given by clearpa
 
 To run the BARN simulations, simply run the `BARN_runner.launch.py` launch file located in the `jackal_helper` package:
 ```
-source /<YOUR_HOME_DIR>/jackal_ws/install/local_setup.sh
+source $HOME/jackal_ws/install/local_setup.sh 
 ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
 

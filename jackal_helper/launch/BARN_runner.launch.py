@@ -176,6 +176,12 @@ def launch_navigation_stack(context, *args, **kwargs):
     return [nav2_launch, nav2_exit_handler, publish_goal]
 
 def generate_launch_description():
+    
+    # spawn jackal after 5 seconds
+    spawn_jackal = TimerAction(
+        period=5.0,
+        actions=[LogInfo(msg="Spawning Jackal..."), OpaqueFunction(function=spawn_jackal)]
+    )
 
     # Start the BARN_runner node after 10 seconds. this replaces the run.py in ROS1 version of The_BARN_Challenge.
     BARN_runner_node = TimerAction(
@@ -206,11 +212,14 @@ def generate_launch_description():
         period=15.0,
         actions=[LogInfo(msg="Launching Nav2..."), OpaqueFunction(function=launch_navigation_stack)]
     )
+    
+    
+
 
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(OpaqueFunction(function=launch_ros_gazebo))
-    ld.add_action(OpaqueFunction(function=spawn_jackal))
+    ld.add_action(spawn_jackal)
     ld.add_action(BARN_runner_node)
     ld.add_action(nav_stack)
     return ld
