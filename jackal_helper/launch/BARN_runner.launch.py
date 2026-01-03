@@ -178,7 +178,7 @@ def launch_navigation_stack(context, *args, **kwargs):
 def generate_launch_description():
     
     # spawn jackal after 5 seconds
-    spawn_jackal = TimerAction(
+    spawn_jackal_timed = TimerAction(
         period=5.0,
         actions=[LogInfo(msg="Spawning Jackal..."), OpaqueFunction(function=spawn_jackal)]
     )
@@ -219,7 +219,7 @@ def generate_launch_description():
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(OpaqueFunction(function=launch_ros_gazebo))
-    ld.add_action(spawn_jackal)
+    ld.add_action(spawn_jackal_timed)
     ld.add_action(BARN_runner_node)
     ld.add_action(nav_stack)
     return ld
