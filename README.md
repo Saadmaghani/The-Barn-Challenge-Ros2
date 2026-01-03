@@ -19,49 +19,45 @@
 
 ## Requirements
 If you run it on a local machine without containers:
-* ROS version at least Jazzy
-<!-- * Ubuntu 24.04 -->
-* rosdep
-* Gazebo Harmonic (installed by default with ROS 2 Jazzy)
+* [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debians.html)
 
-If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
 
 ## Installation
 Follow the instructions below to run simulations on your local machines.
-
+<!-- 
 1. Create a virtual environment (we show examples with python venv, you can use conda instead)
 ```
 apt -y update; apt-get -y install python3-venv
 python3 -m venv $HOME/nav_challenge
 python3 -m venv --system-site-packages nav_challenge 
-export PATH="$HOME/nav_challenge/bin:$PATH"
-```
+source $HOME/nav_challenge/bin/activate
+``` -->
 
-2. Install Python dependencies
+<!-- 2. Install Python dependencies
 ```
 pip3 install catkin_pkg numpy pyyaml
-```
+``` -->
 
-3. Create ROS workspace
+1. Create ROS workspace
 ```
 mkdir -p $HOME/jackal_ws/src
 cd $HOME/jackal_ws/src
 ```
 
-4. Clone this repo and required ros packages: 
+2. Clone this repo: 
 ```
 git clone https://github.com/Saadmaghani/The-Barn-Challenge-Ros2
 ```
 
-5. Install ROS package dependencies: (replace `<YOUR_ROS_VERSION>` with your own, e.g. jazzy. Currently only jazzy is supported)
+3. Install ROS package dependencies: (replace `<YOUR_ROS_VERSION>` with your own, e.g. jazzy. Currently only jazzy is supported)
 ```
 cd ..
 source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 rosdep init; rosdep update
-rosdep install -y --from-paths . --ignore-src --rosdistro=<YOUR_ROS_VERSION>
+rosdep install -y --from-paths . --ignore-src 
 ```
 
-6. Build the workspace
+4. Build the workspace
 ```
 colcon build --symlink-install
 ```
@@ -72,9 +68,12 @@ Below is the example to run nav2 with MPPI ([example controller given by clearpa
 
 To run the BARN simulations, simply run the `BARN_runner.launch.py` launch file located in the `jackal_helper` package:
 ```
+source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 source $HOME/jackal_ws/install/local_setup.sh 
 ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
+
+If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
 
 <!-- 
 A successful run should print the episode status (collided/succeeded/timeout) and the time cost in second:
@@ -94,7 +93,9 @@ A successful run should print the episode status (collided/succeeded/timeout) an
 ## Test your own navigation stack
 We currently don't provide a lot of instructions or a standard API for implementing the navigation stack, but we might add more in this section depending on people's feedback. If you are new to the ROS 2 or mobile robot navigation, we suggest checking [nav2](https://docs.nav2.org/) which provides basic interface to manipulate a robot.
 
-The suggested work flow is to edit the `launch_navigation_stack` method in [BARN_runner.launch.py](jackal_helper/launch/BARN_runner.launch.py#116). Typically, you would write a custom nav2 bringup launch file. We have provided an example launch file [nav2_bringup.launch.py](ackal_helper/launch/nav2_bringup.launch.py). You could also use the provided nav2_bringup launch file while just customizing the [nav2.yaml](jackal_helper/config/nav2.yaml). You should not edit other parts in this file. 
+The suggested work flow is to edit the `launch_navigation_stack` method in [BARN_runner.launch.py](jackal_helper/launch/BARN_runner.launch.py#116). Typically, you would write a custom nav2 bringup launch file. We have provided an example launch file [nav2_bringup.launch.py](jackal_helper/launch/nav2_bringup.launch.py). You could also use the provided nav2_bringup launch file while just customizing the [nav2.yaml](jackal_helper/config/nav2.yaml) file. 
+
+You should not edit other parts in BARN_runner.launch.py. 
 
 We provide a bash script `test.sh` to run your navigation stack on 50 uniformly sampled BARN worlds with 10 runs for each world. Once the tests finish, run `python report_test.py --out_path /path/to/out/file` to report the test. 
 
