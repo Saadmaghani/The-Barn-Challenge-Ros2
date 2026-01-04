@@ -21,17 +21,19 @@ ARGUMENTS = [
                           choices=['true', 'false'], description='Start rviz.'),
     DeclareLaunchArgument('gui', default_value='false',
                           choices=['true', 'false'], description='Start gazebo gui.'),
-    DeclareLaunchArgument('world_idx', default_value='1',
+    DeclareLaunchArgument('world_idx', default_value='0',
                           description='BARN World Index: [0-299].'),
     DeclareLaunchArgument('setup_path',
                           default_value=PathJoinSubstitution([get_package_share_directory('jackal_helper'), 'config']),
-                          description='Clearpath setup path. The folder which contains robot.yaml.'),
+                          description='Clearpath setup path. The folder which contains robot.yaml & nav2.yaml.'),
     DeclareLaunchArgument('out_file',
                           default_value="out.txt",
                           description='File name which trial results are stored.'),
     DeclareLaunchArgument('timeout',
                           default_value='100',
                           description='Trial timeout time in seconds.'),
+    DeclareLaunchArgument('generate', default_value='false',
+                          choices=['true', 'false'], description='Generate jackal parameters and launch files.'),
 ]
 
 def parse_world_idx(world_idx:str)->str:
@@ -107,7 +109,7 @@ def spawn_jackal(context, *args, **kwargs):
             ('setup_path', LaunchConfiguration('setup_path')),
             ('world', world_name),
             ('rviz', LaunchConfiguration('rviz')),
-            ('generate', 'true'),
+            ('generate', LaunchConfiguration('generate')),
             ('x', '2.0'),
             ('y', '2.0'),
             ('z', '0.3')]

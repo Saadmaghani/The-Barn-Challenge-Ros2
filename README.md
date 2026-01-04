@@ -6,6 +6,9 @@
 
 # ICRA BARN Navigation Challenge
 
+This is the repository for The BARN Challenge using ROS 2. For ROS 1 see [The BARN Challenge](https://github.com/Daffan/the-barn-challenge).
+
+
 ## Updates:
 
 * 01/01/2026: The BARN Challenge has been updated for ROS2 Jazzy. This is a repository under work. Current limitations of ROS2 branch:

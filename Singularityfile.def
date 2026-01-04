@@ -1,0 +1,34 @@
+bootstrap: docker
+from: ros:jazzy
+
+# create the workspace
+%setup
+    mkdir -p ${SINGULARITY_ROOTFS}/jackal_ws/src/The-Barn-Challenge-Ros2
+
+# copy files over
+%files
+    jackal_helper /jackal_ws/src/The-Barn-Challenge-Ros2/jackal_helper
+    res /jackal_ws/src/The-Barn-Challenge-Ros2/res
+    test.sh /jackal_ws/src/The-Barn-Challenge-Ros2/test.sh
+    report_test.py /jackal_ws/src/The-Barn-Challenge-Ros2/report_test.py
+    entrypoint.sh /jackal_ws/src/The-Barn-Challenge-Ros2/entrypoint.sh
+
+
+%post -c /bin/
+    # install gazebo. doesnt come in the ros:jazzy container
+    apt-get update
+    apt-get install ros-jazzy-ros-gz
+
+    # install dependencies and build workspace
+    source /opt/ros/jazzy/setup.bash
+    cd /jackal_ws
+    rosdep init; rosdep update
+    rosdep install -y --from-paths . --ignore-src 
+    colcon build
+
+    # run the first instance of BARN with generate = True. Subsequent commands will have generate = False
+    source /jackal_ws/install/local_setup.bash
+    ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0 generate:=true
+
+
+
