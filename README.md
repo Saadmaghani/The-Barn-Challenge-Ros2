@@ -11,15 +11,15 @@ This is the repository for The BARN Challenge using ROS 2. For ROS 1 see [The BA
 
 ## Updates:
 
-* 01/01/2026: The BARN Challenge has been updated for ROS2 Jazzy. This is a repository under work. Current limitations of ROS2 branch:
+* 01/01/2026: The BARN Challenge has been updated for ROS2 Jazzy. This is a repository under work. Current limitations (as compared to ROS 1 repo.):
   - No DynaBARN worlds.
   - ~~No Singularity container.~~ (01/04/2026)
-  - [eband](htps://github.com/utexas-bwi/eband_local_planner.git) is not currently supported.
+  - No plans to support [eband](htps://github.com/utexas-bwi/eband_local_planner.git).
   - Very verbose output.
 
-
+<!--
 * 02/04/2024: Adding 60 [DynaBARN](https://github.com/aninair1905/DynaBARN) environments. DynaBARN environments can be accessed by world indexes from 300-359.
-
+-->
 
 ## Requirements
 If you run it on a local machine without containers:
@@ -82,33 +82,38 @@ source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 source $HOME/jackal_ws/install/local_setup.sh 
 ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
-Have a look at the [list of arguments](jackal_helper/launch/BARN_runner.launch.py#19) accepted by the launch file. For example, setting `gui:=true` will launch gazebo's gui which in, most cases, is helpful.
+Have a look at the [list of arguments](jackal_helper/launch/BARN_runner.launch.py#19) accepted by the launch file. For example, setting `gui:=true` will launch gazebo's gui which, in most cases, is helpful.
 
 To run it in a Singularity container:
 ```
 ./singularity_run.sh /path/to/image/file ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
 
-If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
-
 
 A successful run should print the episode status (collided/succeeded/timeout), the time cost in second, and the navigation metric:
-
-> \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
-> Navigation succeeded with time 55.6140 (s).
+> ```
+> >>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
+> Navigation succeeded with time 55.6140 (s)
 > Navigation metric: 0.1250
 > ----------------------------------------------------
+> ```
 
-> \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
-> Navigation collided with time 27.2930 (s).
+> ```
+> >>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
+> Navigation collided with time 27.2930 (s)
 > Navigation metric: 0.0000
 > ----------------------------------------------------
+> ```
 
-> \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
+> ```
+> >>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
 > Navigation timeout with time 100.0000 (s)
 > Navigation metric: 0.0000
 > ----------------------------------------------------
+> ```
 
+
+If you run into any issue, please submit a github Issue.
 
 ## Test your own navigation stack
 We currently don't provide a lot of instructions or a standard API for implementing the navigation stack, but we might add more in this section depending on people's feedback. If you are new to the ROS 2 or mobile robot navigation, we suggest checking [nav2](https://docs.nav2.org/) which provides basic interface to manipulate a robot.
