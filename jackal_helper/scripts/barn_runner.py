@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import time
 import os
+import sys
 from os.path import dirname
 import threading
 import numpy as np
@@ -8,15 +9,12 @@ import numpy as np
 import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-# from rclpy.executors import SingleThreadedExecutor --> cant make executors inside nodes. meant to be outside nodes.
 from ament_index_python.packages import get_package_share_directory
 
 from jackal_helper.utils import get_pkg_src_path
 from gazebo_simulation import GazeboSimulationController
 
 # this file will be used to run the experiments and control the simulation via gazebo_simulation
-
-# TODO: \r print statements not being shown 
 
 def compute_distance(p1, p2):
     return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
@@ -34,21 +32,20 @@ def path_coord_to_gazebo_coord(x, y):
 class BARNRunner(Node):
     def __init__(self):
         super().__init__('BARN_Runner')
-        self.get_logger().info("BARN RUNNER started")
+        self.get_logger().info(">>>>>>>>> BARN Runner started.")
 
         # declare parameters
         self._declare_parameters()
 
         # initialize 
         self._setup_initial_goal_positions()
-        self.timeout = self.get_parameter('timeout').value
         self.file_lock = threading.Lock()
 
         # start up GazeboSimulation Node
         self.gazebo_sim_ctrl = GazeboSimulationController(init_position=(self.init_coor[0], self.init_coor[1], self.init_yaw_angle))
       
     def reset_jackal_to_start(self):
-        self.get_logger().info("Resetting Jackal...")
+        self.get_logger().info(">>>>>>>>> Resetting Jackal...")
         
         pos = self.gazebo_sim_ctrl.get_model_state().position
         curr_coor = (pos.x, pos.y)
@@ -61,15 +58,18 @@ class BARNRunner(Node):
             curr_coor = (pos.x, pos.y)
             collided = self.gazebo_sim_ctrl.get_hard_collision()
         
-        self.get_logger().info(f"initial position: ({curr_coor[0]:.2f}, {curr_coor[1]:.2f})")
-        self.get_logger().info(f"goal position: ({self.goal_coor[0]:.2f}, {self.goal_coor[1]:.2f})")
+        self.get_logger().info(f">>>>>>>>> Initial position: ({curr_coor[0]:.2f}, {curr_coor[1]:.2f}).")
+        self.get_logger().info(f">>>>>>>>> Goal position: ({self.goal_coor[0]:.2f}, {self.goal_coor[1]:.2f}).")
 
     def run_trial(self):
-        self.get_logger().info(f"Waiting for robot to start moving...")
+        timeout = self.get_parameter('timeout').value
+        logging_throttle_duration_s = self.get_parameter('logging_throttle_duration_s').value
+
+        self.get_logger().info(f">>>>>>>>> Waiting for robot to start moving...")
         curr_time = self.get_clock().now()
         pos = self.gazebo_sim_ctrl.get_model_state().position
         curr_coor = (pos.x, pos.y)
-
+        
         # check whether the robot started to move
         while compute_distance(self.init_coor, curr_coor) < 0.1:
             # self.get_logger().info(f"x: {curr_coor[0]:.2f} (m), y: {curr_coor[1]:.2f} (m)")
@@ -79,24 +79,23 @@ class BARNRunner(Node):
             rclpy.spin_once(self.gazebo_sim_ctrl, timeout_sec=0.01) # spin gazebo_sim_ctrl node instead of self so gazebo_sim_ctrl gets updated. or TODO use executor to spin both.
             time.sleep(0.01) # so CPU is not overloaded
 
-        self.get_logger().info(f"Trial running...")
+        self.get_logger().info(f">>>>>>>>> Trial running...")
         # start navigation, check position, time and collision
         start_time = curr_time
         start_time_cpu = time.time()
         collided = False
         elapsed = (curr_time - start_time).nanoseconds/1e9
 
-        while compute_distance(self.goal_coor, curr_coor) > 1 and not collided and elapsed < self.timeout:
+        while compute_distance(self.goal_coor, curr_coor) > 1 and not collided and elapsed < timeout:
             curr_time = self.get_clock().now()
             pos = self.gazebo_sim_ctrl.get_model_state().position
             curr_coor = (pos.x, pos.y)
             elapsed = (curr_time - start_time).nanoseconds/1e9
-            print(f"Time: {elapsed:.2f} (s), x: {curr_coor[0]:.2f} (m), y: {curr_coor[1]:.2f} (m)", end='\r')
+            if logging_throttle_duration_s > 0:
+                self.get_logger().info(f"Time: {elapsed:.2f} (s), x: {curr_coor[0]:.2f} (m), y: {curr_coor[1]:.2f} (m)", throttle_duration_sec=logging_throttle_duration_s)
             collided = self.gazebo_sim_ctrl.get_hard_collision()
             rclpy.spin_once(self.gazebo_sim_ctrl, timeout_sec=0.01)
             time.sleep(0.01) # so CPU is not overloaded
-            
-        print() # so that we can keep the last print statement. 
 
         # self.get_logger().info(f"Trial ended")
         self.gazebo_sim_ctrl.pause()
@@ -105,13 +104,13 @@ class BARNRunner(Node):
         self.trial_success = False
         if collided:
             self.trial_status = "collided"
-        elif elapsed >= self.timeout:
+        elif elapsed >= timeout:
             self.trial_status = "timeout"
         else:
             self.trial_status = "succeeded"
             self.trial_success = True
-        
-        self.get_logger().info(f"Trial ended. Navigation {self.trial_status} with time {elapsed:.4f} (s).")
+        self.get_logger().info(f">>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<")
+        self.get_logger().info(f"Navigation {self.trial_status} with time {elapsed:.4f} (s)")
     
     def trial_cleanup(self):
         # report metric, generate log, and shutdown GazeboSimController
@@ -136,7 +135,8 @@ class BARNRunner(Node):
         optimal_time = path_length / 2
         nav_metric = int(self.trial_success) * optimal_time / np.clip(self.trial_elapsed_time, 2 * optimal_time, 8 * optimal_time)
         self.get_logger().info(f"Navigation metric: {nav_metric:.4f}")
-        
+        self.get_logger().info(f"----------------------------------------------------")
+
         # writing to file
 
         out_path = os.path.join(get_pkg_src_path(), 'res')
@@ -160,6 +160,7 @@ class BARNRunner(Node):
         self.declare_parameter('world_idx', 0)
         self.declare_parameter('out_file', 'out.txt')
         self.declare_parameter('timeout', 100)
+        self.declare_parameter('logging_throttle_duration_s', 1)
 
     def _setup_initial_goal_positions(self):
         world_idx = self.get_parameter('world_idx').value

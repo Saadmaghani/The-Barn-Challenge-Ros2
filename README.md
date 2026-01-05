@@ -91,20 +91,24 @@ To run it in a Singularity container:
 
 If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
 
-<!-- 
-A successful run should print the episode status (collided/succeeded/timeout) and the time cost in second:
-> \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
->
-> Navigation collided with time 27.2930 (s)
+
+A successful run should print the episode status (collided/succeeded/timeout), the time cost in second, and the navigation metric:
 
 > \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
->
-> Navigation succeeded with time 29.4610 (s)
-
+> Navigation succeeded with time 55.6140 (s).
+> Navigation metric: 0.1250
+> ----------------------------------------------------
 
 > \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
->
->Navigation timeout with time 100.0000 (s) -->
+> Navigation collided with time 27.2930 (s).
+> Navigation metric: 0.0000
+> ----------------------------------------------------
+
+> \>>>>>>>>>>>>>>>>>> Test finished! <<<<<<<<<<<<<<<<<<
+> Navigation timeout with time 100.0000 (s)
+> Navigation metric: 0.0000
+> ----------------------------------------------------
+
 
 ## Test your own navigation stack
 We currently don't provide a lot of instructions or a standard API for implementing the navigation stack, but we might add more in this section depending on people's feedback. If you are new to the ROS 2 or mobile robot navigation, we suggest checking [nav2](https://docs.nav2.org/) which provides basic interface to manipulate a robot.
@@ -124,5 +128,5 @@ You should see the report as this:
 
 
 ## Submission
-Submit a link that downloads your customized repository to this [Google form](https://docs.google.com/forms/d/e/1FAIpQLSfZLMVluXE-HWnV9lNP00LuBi3e9HFOeLi30p9tsHUViWpqrA/viewform). Your navigation stack will be tested in the Singularity container on 50 hold-out BARN worlds sampled from the same distribution as the 300 BARN worlds. In the repository, make sure the `run.py` runs your navigation stack and `Singularityfile.def` installs all the dependencies of your repo. We suggest to actually build an image and test it with `./singularity_run.sh /path/to/image/file ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0`.
+Submit a link that downloads your customized repository to this [Google form](https://forms.gle/w5s4kV8Xc76s3kMd6). Your navigation stack will be tested in the Singularity container on 50 hold-out BARN worlds sampled from the same distribution as the 300 BARN worlds. In the repository, make sure the `run.py` runs your navigation stack and `Singularityfile.def` installs all the dependencies of your repo. We suggest to actually build an image and test it with `./singularity_run.sh /path/to/image/file ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0`.
 

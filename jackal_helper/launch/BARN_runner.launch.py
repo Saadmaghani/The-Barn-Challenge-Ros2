@@ -33,7 +33,10 @@ ARGUMENTS = [
                           description='File name which trial results are stored.'),
     DeclareLaunchArgument('timeout',
                           default_value='100',
-                          description='Trial timeout time in seconds.')
+                          description='Trial timeout time in seconds.'),
+    DeclareLaunchArgument('throttle_duration',
+                          default_value='1',
+                          description='Time interval in seconds for throttling BARN Runner log messages during a trial. Set to 0 or a negative value to disable logging.')
 ]
 
 def parse_world_idx(world_idx:str)->str:
@@ -163,7 +166,7 @@ def launch_navigation_stack(context, *args, **kwargs):
     publish_goal = TimerAction(
         period=10.0,
         actions=[
-            LogInfo(msg="Publishing Nav2 goal..."),
+            LogInfo(msg=">>>>>>>>> Publishing Nav2 goal... "),
             ExecuteProcess(
                 cmd=[
                     'ros2', 'action', 'send_goal',
@@ -180,11 +183,15 @@ def launch_navigation_stack(context, *args, **kwargs):
     return [nav2_launch, nav2_exit_handler, publish_goal]
 
 def generate_launch_description():
+    
+    set_logging_format = SetEnvironmentVariable(name="RCUTILS_CONSOLE_OUTPUT_FORMAT", value="[{severity}] [{name}]: {message}")
+
+    
     # Start the BARN_runner node after 10 seconds. this replaces the run.py in ROS1 version of The_BARN_Challenge.
     BARN_runner_node = TimerAction(
         period = 10.0,
         actions=[
-            LogInfo(msg="Starting BARN Runner node..."),
+            LogInfo(msg=">>>>>>>>> Starting BARN Runner node..."),
             Node(
                 package="jackal_helper",
                 executable="barn_runner.py",
@@ -193,13 +200,13 @@ def generate_launch_description():
                 parameters=[
                     {'world_idx': LaunchConfiguration('world_idx')},
                     {'out_file': LaunchConfiguration('out_file')},
-                    {'timeout': LaunchConfiguration('timeout')}
+                    {'timeout': LaunchConfiguration('timeout')},
+                    {'logging_throttle_duration_s': LaunchConfiguration('throttle_duration')}
                     ],
                 on_exit=[
-                    LogInfo(msg="Trial ended. Shutting down in 5 seconds..."),
+                    LogInfo(msg=">>>>>>>>> Shutting down in 5 seconds..."),
                     TimerAction(period=5.0, actions=[Shutdown(), ExecuteProcess(cmd=['pkill', '-9', '-f','\'gz sim\''], shell=True)]),
                     ],
-                
             )
         ]
     ) 
@@ -207,11 +214,12 @@ def generate_launch_description():
     # Launch navigation stack after 15 seconds
     nav_stack = TimerAction(
         period=15.0,
-        actions=[LogInfo(msg="Launching Nav2..."), OpaqueFunction(function=launch_navigation_stack)]
+        actions=[LogInfo(msg=">>>>>>>>> Launching Nav2..."), OpaqueFunction(function=launch_navigation_stack)]
     )
     
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
+    ld.add_action(set_logging_format)
     ld.add_action(OpaqueFunction(function=launch_ros_gazebo))
     ld.add_action(OpaqueFunction(function=spawn_jackal))
     ld.add_action(BARN_runner_node)
