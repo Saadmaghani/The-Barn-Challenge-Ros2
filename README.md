@@ -13,8 +13,8 @@ This is the repository for The BARN Challenge using ROS 2. For ROS 1 see [The BA
 
 * 01/01/2026: The BARN Challenge has been updated for ROS2 Jazzy. This is a repository under work. Current limitations of ROS2 branch:
   - No DynaBARN worlds.
-  - No Singularity container.
-  - [eband](https://github.com/utexas-bwi/eband_local_planner.git) is not currently supported.
+  - ~~No Singularity container.~~ (01/04/2026)
+  - [eband](htps://github.com/utexas-bwi/eband_local_planner.git) is not currently supported.
   - Very verbose output.
 
 
@@ -27,20 +27,9 @@ If you run it on a local machine without containers:
 
 
 ## Installation
-Follow the instructions below to run simulations on your local machines.
-<!-- 
-1. Create a virtual environment (we show examples with python venv, you can use conda instead)
-```
-apt -y update; apt-get -y install python3-venv
-python3 -m venv $HOME/nav_challenge
-python3 -m venv --system-site-packages nav_challenge 
-source $HOME/nav_challenge/bin/activate
-``` -->
 
-<!-- 2. Install Python dependencies
-```
-pip3 install catkin_pkg numpy pyyaml
-``` -->
+#### On local machine
+Follow the instructions below to run simulations on your local machines.
 
 1. Create ROS workspace
 ```
@@ -66,6 +55,23 @@ rosdep install -y --from-paths . --ignore-src
 colcon build --symlink-install
 ```
 
+#### On Singularity container
+
+Follow the instruction below to run simulations in Singularity containers.
+
+1. Follow this instruction to install Singularity: https://docs.sylabs.io/guides/latest/user-guide/quick_start.html. Singularity version = 4.3.0 was used to successfully build the image. Lower versions were not tested.
+
+2. Clone this repo
+```
+git clone https://github.com/Daffan/the-barn-challenge.git
+cd the-barn-challenge
+```
+
+3. Build Singularity image (sudo access required)
+```
+sudo singularity build nav_competition_image.sif Singularityfile.def
+```
+
 ## Run Simulations
 
 Below is the example to run nav2 with MPPI ([example controller given by clearpath](https://github.com/clearpathrobotics/clearpath_nav2_demos/tree/jazzy)) as the controller.
@@ -76,7 +82,12 @@ source /opt/ros/<YOUR_ROS_VERSION>/setup.bash
 source $HOME/jackal_ws/install/local_setup.sh 
 ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
 ```
-Have a look at the [list of arguments](jackal_helper/launch/BARN_runner.launch.py#19) accepted by the launch file. For example, setting `gui:=true` will launch gazebo's gui which in most cases is helpful.
+Have a look at the [list of arguments](jackal_helper/launch/BARN_runner.launch.py#19) accepted by the launch file. For example, setting `gui:=true` will launch gazebo's gui which in, most cases, is helpful.
+
+To run it in a Singularity container:
+```
+./singularity_run.sh /path/to/image/file ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0
+```
 
 If you run into any issue, please contact organizers for help (sghani2@gmu.edu).
 
@@ -113,5 +124,5 @@ You should see the report as this:
 
 
 ## Submission
-<!-- Submit a link that downloads your customized repository to this [Google form](https://docs.google.com/forms/d/e/1FAIpQLSfZLMVluXE-HWnV9lNP00LuBi3e9HFOeLi30p9tsHUViWpqrA/viewform). Your navigation stack will be tested in the Singularity container on 50 hold-out BARN worlds sampled from the same distribution as the 300 BARN worlds. In the repository, make sure the `run.py` runs your navigation stack and `Singularityfile.def` installs all the dependencies of your repo. We suggest to actually build an image and test it with `./singularity_run.sh /path/to/image/file python3 run.py --world_idx 0`. -->
+Submit a link that downloads your customized repository to this [Google form](https://docs.google.com/forms/d/e/1FAIpQLSfZLMVluXE-HWnV9lNP00LuBi3e9HFOeLi30p9tsHUViWpqrA/viewform). Your navigation stack will be tested in the Singularity container on 50 hold-out BARN worlds sampled from the same distribution as the 300 BARN worlds. In the repository, make sure the `run.py` runs your navigation stack and `Singularityfile.def` installs all the dependencies of your repo. We suggest to actually build an image and test it with `./singularity_run.sh /path/to/image/file ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0`.
 
