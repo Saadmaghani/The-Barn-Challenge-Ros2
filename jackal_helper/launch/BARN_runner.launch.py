@@ -12,6 +12,8 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node, SetRemap
 
+from jackal_helper.utils import get_pkg_src_path
+
 """Launch gz simulation, ros-gz-bridge, jackal, BARN simulation runner, and (rviz2/gz gui) optionally."""
 
 # TODO: integrate use_sim_time throughout
@@ -24,16 +26,14 @@ ARGUMENTS = [
     DeclareLaunchArgument('world_idx', default_value='0',
                           description='BARN World Index: [0-299].'),
     DeclareLaunchArgument('setup_path',
-                          default_value=PathJoinSubstitution([get_package_share_directory('jackal_helper'), 'config']),
+                          default_value=PathJoinSubstitution([get_pkg_src_path(jackal_pkg=True), 'config']),
                           description='Clearpath setup path. The folder which contains robot.yaml & nav2.yaml.'),
     DeclareLaunchArgument('out_file',
                           default_value="out.txt",
                           description='File name which trial results are stored.'),
     DeclareLaunchArgument('timeout',
                           default_value='100',
-                          description='Trial timeout time in seconds.'),
-    DeclareLaunchArgument('generate', default_value='false',
-                          choices=['true', 'false'], description='Generate jackal parameters and launch files.'),
+                          description='Trial timeout time in seconds.')
 ]
 
 def parse_world_idx(world_idx:str)->str:
@@ -109,7 +109,7 @@ def spawn_jackal(context, *args, **kwargs):
             ('setup_path', LaunchConfiguration('setup_path')),
             ('world', world_name),
             ('rviz', LaunchConfiguration('rviz')),
-            ('generate', LaunchConfiguration('generate')),
+            ('generate', 'true'),
             ('x', '2.0'),
             ('y', '2.0'),
             ('z', '0.3')]
@@ -184,7 +184,7 @@ def generate_launch_description():
     BARN_runner_node = TimerAction(
         period = 10.0,
         actions=[
-            LogInfo(msg="BARN Runner node started. Starting Trial..."),
+            LogInfo(msg="Starting BARN Runner node..."),
             Node(
                 package="jackal_helper",
                 executable="barn_runner.py",

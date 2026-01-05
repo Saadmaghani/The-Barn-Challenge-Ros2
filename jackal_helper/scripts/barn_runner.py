@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import time
 import os
 from os.path import dirname
@@ -12,6 +11,7 @@ from rclpy.parameter import Parameter
 # from rclpy.executors import SingleThreadedExecutor --> cant make executors inside nodes. meant to be outside nodes.
 from ament_index_python.packages import get_package_share_directory
 
+from jackal_helper.utils import get_pkg_src_path
 from gazebo_simulation import GazeboSimulationController
 
 # this file will be used to run the experiments and control the simulation via gazebo_simulation
@@ -111,7 +111,7 @@ class BARNRunner(Node):
             self.trial_status = "succeeded"
             self.trial_success = True
         
-        self.get_logger().info(f"Navigation {self.trial_status} with time {elapsed:.4f} (s).")
+        self.get_logger().info(f"Trial ended. Navigation {self.trial_status} with time {elapsed:.4f} (s).")
     
     def trial_cleanup(self):
         # report metric, generate log, and shutdown GazeboSimController
@@ -138,7 +138,8 @@ class BARNRunner(Node):
         self.get_logger().info(f"Navigation metric: {nav_metric:.4f}")
         
         # writing to file
-        out_path = os.path.join(self._get_pkg_src_path(), 'res')
+
+        out_path = os.path.join(get_pkg_src_path(), 'res')
         os.makedirs(out_path, exist_ok=True)
         out_path = os.path.join(out_path, out_file) 
         
@@ -175,11 +176,11 @@ class BARNRunner(Node):
         self.init_coor = (INIT_POSITION[0], INIT_POSITION[1])
         self.goal_coor = (INIT_POSITION[0] + GOAL_POSITION[0], INIT_POSITION[1] + GOAL_POSITION[1])
       
-    def _get_pkg_src_path(self):
-        # hack to get ws/src/jackal_helper
-        workspace_path = dirname(dirname(dirname(dirname(get_package_share_directory("jackal_helper")))))
-        BARN_challenge_src_path = os.path.join(workspace_path, "src", "The-Barn-Challenge-Ros2")
-        return BARN_challenge_src_path
+    # def _get_pkg_src_path(self):
+    #     # hack to get ws/src/jackal_helper
+    #     workspace_path = dirname(dirname(dirname(dirname(get_package_share_directory("jackal_helper")))))
+    #     BARN_challenge_src_path = os.path.join(workspace_path, "src", "The-Barn-Challenge-Ros2")
+    #     return BARN_challenge_src_path
 
 def main():
     rclpy.init()

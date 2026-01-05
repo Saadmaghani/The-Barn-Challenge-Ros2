@@ -14,7 +14,7 @@ from: ros:jazzy
     entrypoint.sh /jackal_ws/src/The-Barn-Challenge-Ros2/entrypoint.sh
 
 
-%post -c /bin/
+%post -c /bin/bash
     # install gazebo. doesnt come in the ros:jazzy container
     apt-get update
     apt-get install ros-jazzy-ros-gz
@@ -25,10 +25,6 @@ from: ros:jazzy
     rosdep init; rosdep update
     rosdep install -y --from-paths . --ignore-src 
     colcon build
-
-    # run the first instance of BARN with generate = True. Subsequent commands will have generate = False
-    source /jackal_ws/install/local_setup.bash
-    ros2 launch jackal_helper BARN_runner.launch.py world_idx:=0 generate:=true
 
 
 

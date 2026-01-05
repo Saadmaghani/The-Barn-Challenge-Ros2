@@ -1,3 +1,13 @@
 # pycache files
 *.pyc 
 
+# generated files by spawn_jackal
+jackal_helper/config/*.xacro
+jackal_helper/config/*.srdf
+jackal_helper/config/manipulators
+jackal_helper/config/platform
+jackal_helper/config/platform-extras
+jackal_helper/config/sensors
+
+# Singularity file
+*.sif

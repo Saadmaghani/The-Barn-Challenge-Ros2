@@ -36,6 +36,9 @@ find_package(ros_gz_interfaces REQUIRED)
 #  DESTINATION lib/${PROJECT_NAME}
 #)
 
+## Copy Python package directories
+ament_python_install_package(${PROJECT_NAME})
+
 ## Python Executables
 install(PROGRAMS
   scripts/gazebo_simulation.py
